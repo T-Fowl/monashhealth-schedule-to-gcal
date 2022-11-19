@@ -1,0 +1,8 @@
+.idea
+build
+out
+.gradle
+
+client-secrets.json
+*.private.env.json
+.monashhealth-schedule
