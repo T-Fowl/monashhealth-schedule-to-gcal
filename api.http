@@ -1,0 +1,22 @@
+###
+GET https://monashhealth-sso.prd.mykronos.com/wfc/restcall/v1/commons/timezones/now/user
+accept: application/json, text/plain, */*
+accept-encoding: gzip, deflate, br
+accept-language: en-AU,en-GB;q=0.9,en-US;q=0.8,en;q=0.7
+referer: https://monashhealth-sso.prd.mykronos.com/wfd/home
+user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36
+cookie: {{cookies}}
+
+###
+POST https://monashhealth-sso.prd.mykronos.com/myschedule/eventDispatcher
+accept: application/json, text/plain, */*
+accept-encoding: gzip, deflate, br
+accept-language: en-AU,en-GB;q=0.9,en-US;q=0.8,en;q=0.7
+referer: https://monashhealth-sso.prd.mykronos.com/wfd/home
+user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36
+# response will update XCSRF-TOKEN cookie
+cookie: {{cookies}}
+content-type: application/json
+x-xsrf-token: {{xsrf}}
+
+{"startDate":"2022-10-26","endDate":"2022-12-31","types":[{"name":"approvedtimeoffrequest"},{"name":"holiday"},{"name":"inprogresstimeoffrequest"},{"name":"openshift"},{"name":"paycodeedit"},{"name":"regularshift"},{"name":"scheduletag"},{"name":"transfershift"}]}
