@@ -32,7 +32,7 @@ fun Event.toGoogleEventOrNull(): GoogleEvent? {
                 prop(EXT_PROP_KEY_TYPE to type().name)
                 prop(EXT_PROP_KEY_ID to id)
                 prop(EXT_PROP_CREATED_BY_MARKER)
-                prop(EXT_PROP_KEY_EVENT_JSON to JSON.encodeToString(this))
+                prop(EXT_PROP_KEY_EVENT_JSON to JSON.encodeToString(this@toGoogleEventOrNull))
             }
         }
 
