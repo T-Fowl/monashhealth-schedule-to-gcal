@@ -49,6 +49,8 @@ fun Event.toGoogleEventOrNull(): GoogleEvent? {
 }
 
 fun Event.PayCodeEdit.customisePayCodeEdit(event: GoogleEvent): GoogleEvent {
+    if(title.startsWith("SICK LVE", ignoreCase = true) || title.startsWith("SICK LEAVE", ignoreCase = true))
+        return event.setSummary("\uD83E\uDD12 ${event.summary}")
     if (title.equals("Study Leave", ignoreCase = true)) return event.setSummary("Study Leave \uD83D\uDCDA")
     return event
 }
