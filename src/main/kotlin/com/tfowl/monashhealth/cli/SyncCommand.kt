@@ -19,6 +19,8 @@ class SyncCommand : CliktCommand(name = "sync") {
         .file(mustBeReadable = true, canBeDir = false)
         .default(File("client-secrets.json"))
 
+    private val headless by option().flag("--no-headless", default = true)
+
     private val syncFrom by option("--sync-from")
         .convert("DATE") { it.toLocalDateOrNull() ?: fail("Invalid format: $it") }
         .default(LocalDate.now(), "today")
@@ -45,7 +47,7 @@ class SyncCommand : CliktCommand(name = "sync") {
 
         val events = binding {
             val response = createWebDriver().bind().use { pw ->
-                val browser = launchBrowser(pw, headless = false).bind()
+                val browser = launchBrowser(pw, headless = headless).bind()
 
                 val page = login(browser, username, password).bind()
 
