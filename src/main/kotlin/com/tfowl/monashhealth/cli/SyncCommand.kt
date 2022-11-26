@@ -34,6 +34,7 @@ class SyncCommand : CliktCommand(name = "sync") {
     private val password by option("--password").prompt("Password", hideInput = true)
 
     override fun run() {
+        println("Creating Google Calendar service")
         val service = GoogleCalendar.create(
             GoogleApiServiceConfig(
                 secrets = googleClientSecrets,
@@ -46,11 +47,15 @@ class SyncCommand : CliktCommand(name = "sync") {
         val calendar = service.calendarView(googleCalendarId)
 
         val events = binding {
+            println("Creating web driver")
             val response = createWebDriver().bind().use { pw ->
+                println("Launching browser")
                 val browser = launchBrowser(pw, headless = headless).bind()
 
+                println("Logging into kronos")
                 val page = login(browser, username, password).bind()
 
+                println("Fetching events")
                 requestEventsJson(
                     page, EventsRequest(syncFrom, syncTo, EventType.ALL)
                 ).bind()
@@ -59,8 +64,10 @@ class SyncCommand : CliktCommand(name = "sync") {
             JSON.tryDecodeFromString<Events>(response).bind()
         }.getOrThrow()
 
+        println("Transforming events")
         val roster = events.mapNotNull { it.toGoogleEventOrNull() }
 
+        println("Synchronising to Google Calendar")
         sync(
             service, calendar,
             syncFrom..syncTo,
