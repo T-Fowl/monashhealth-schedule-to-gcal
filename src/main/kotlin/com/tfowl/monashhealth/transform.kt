@@ -38,18 +38,19 @@ fun Event.toGoogleEventOrNull(): GoogleEvent? {
 
     @Suppress("KotlinConstantConditions")
     val customisedEvent = when (this) {
-        is Event.RegularShift  -> customiseRegularShift(commonEvent)
-        is Event.TransferShift -> customiseTransferShift(commonEvent)
-        is Event.PayCodeEdit   -> customisePayCodeEdit(commonEvent)
-        is Event.OpenShift     -> error("Should not reach here!")
-        is Event.Holiday       -> error("Should not reach here!")
+        is Event.RegularShift             -> customiseRegularShift(commonEvent)
+        is Event.TransferShift            -> customiseTransferShift(commonEvent)
+        is Event.PayCodeEdit              -> customisePayCodeEdit(commonEvent)
+        is Event.InProgressTimeOffRequest -> customiseInProgressTimeOffRequest(commonEvent)
+        is Event.OpenShift                -> error("Should not reach here!")
+        is Event.Holiday                  -> error("Should not reach here!")
     } ?: return null
 
     return customisedEvent
 }
 
 fun Event.PayCodeEdit.customisePayCodeEdit(event: GoogleEvent): GoogleEvent {
-    if(title.startsWith("SICK LVE", ignoreCase = true) || title.startsWith("SICK LEAVE", ignoreCase = true))
+    if (title.startsWith("SICK LVE", ignoreCase = true) || title.startsWith("SICK LEAVE", ignoreCase = true))
         return event.setSummary("\uD83E\uDD12 ${event.summary}")
     if (title.equals("Study Leave", ignoreCase = true)) return event.setSummary("Study Leave \uD83D\uDCDA")
     return event
@@ -66,6 +67,11 @@ fun Event.TransferShift.customiseTransferShift(event: GoogleEvent): GoogleEvent 
     return event
         .setSummary(regularShiftSummary(this, job, commentNotes ?: emptyList()))
         .setLocation(LOCATION_CLAYTON)
+}
+
+fun Event.InProgressTimeOffRequest.customiseInProgressTimeOffRequest(event: GoogleEvent): GoogleEvent {
+    return event
+        .setSummary("$title ($localizedRequestTitle) [${this.currentStateLabel}]")
 }
 
 private fun regularShiftSummary(shift: Event, job: String, comments: List<CommentNotes>): String = buildString {

@@ -5,6 +5,7 @@ import com.github.ajalt.clikt.parameters.options.*
 import com.github.ajalt.clikt.parameters.types.file
 import com.github.michaelbull.result.binding
 import com.github.michaelbull.result.getOrThrow
+import com.github.michaelbull.result.onFailure
 import com.google.api.client.util.store.FileDataStoreFactory
 import com.google.api.services.calendar.CalendarScopes
 import com.tfowl.gcal.*
@@ -61,7 +62,9 @@ class SyncCommand : CliktCommand(name = "sync") {
                 ).bind()
             }
 
-            JSON.tryDecodeFromString<Events>(response).bind()
+            JSON.tryDecodeFromString<Events>(response)
+                .onFailure { it.printStackTrace(); println(response) }
+                .bind()
         }.getOrThrow()
 
         println("Transforming events")

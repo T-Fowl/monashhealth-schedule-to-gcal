@@ -6,8 +6,10 @@ import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.encoding.*
 import kotlinx.serialization.json.*
+import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 
 @Serializable
 data class EventsRequest(
@@ -22,7 +24,7 @@ data class EventType(val name: String) {
         val ALL = listOf(
             "approvedtimeoffrequest", // TODO: Haven't seen in the wild yet
             "holiday",
-            "inprogresstimeoffrequest", // TODO: Haven't seen in the wild yet
+            "inprogresstimeoffrequest",
             "openshift",
             "paycodeedit",
             "regularshift",
@@ -123,6 +125,28 @@ sealed class Event {
         val amount: Int,
     ) : Event() {
         override val endDateTime: LocalDateTime get() = endDateTimeMaybe ?: startDateTime.plusMinutes(amount.toLong())
+    }
+
+    @Serializable
+    @SerialName("inprogresstimeoffrequest")
+    data class InProgressTimeOffRequest(
+        override val id: String,
+        override val title: String,
+        @Contextual @SerialName("startDateTime") val startInstant: Instant,
+        @Contextual @SerialName("endDateTime") val endInstant: Instant,
+//        @Contextual val startTime: LocalTime? = null,
+        val pid: Int,
+        val isComplete: Boolean,
+        val currentStateLabel: String,
+        val currentState: String, // TODO: Enum
+        val requestTitle: String,
+        val localizedRequestTitle: String,
+        val symbolicAmount: String,
+        val position: JsonElement? = null,
+    ) : Event() {
+        // TODO: Hard-coded zoneid (although this whole utility is only based around Aus/Mel)
+        override val startDateTime: LocalDateTime get() = LocalDateTime.ofInstant(startInstant, ZONE_MELBOURNE)
+        override val endDateTime: LocalDateTime get() = LocalDateTime.ofInstant(endInstant, ZONE_MELBOURNE)
     }
 }
 

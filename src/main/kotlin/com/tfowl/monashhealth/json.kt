@@ -14,6 +14,7 @@ import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.contextual
+import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -26,6 +27,7 @@ val JSON = Json {
         // PayCodeEdit events don't have the 'T' for some reason, but a space
         contextual(LocalDateTimeSerialiser(DateTimeFormatter.ofPattern("yyyy-MM-dd[' ']['T']HH:mm:ss")))
         contextual(LocalDateSerialiser(DateTimeFormatter.ISO_LOCAL_DATE))
+        contextual(InstantSerialiser())
     }
 }
 
@@ -33,6 +35,14 @@ inline fun <reified T> StringFormat.tryDecodeFromString(string: String): Result<
     com.github.michaelbull.result.runCatching {
         decodeFromString<T>(string)
     }.mapError { it as? SerializationException ?: SerializationException(it) }
+
+class InstantSerialiser : KSerializer<Instant> {
+    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("java.time.Instant", PrimitiveKind.STRING)
+
+    override fun deserialize(decoder: Decoder): Instant = Instant.parse(decoder.decodeString())
+
+    override fun serialize(encoder: Encoder, value: Instant) = encoder.encodeString(value.toString())
+}
 
 class LocalDateTimeSerialiser(private val formatter: DateTimeFormatter) : KSerializer<LocalDateTime> {
     override val descriptor: SerialDescriptor =
