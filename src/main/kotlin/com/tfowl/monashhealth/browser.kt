@@ -16,7 +16,7 @@ fun createWebDriver(): Result<Playwright, Throwable> =
 
 fun launchBrowser(playwright: Playwright, headless: Boolean = true): Result<Browser, Throwable> =
     com.github.michaelbull.result.runCatching {
-        playwright.chromium().launch(BrowserType.LaunchOptions().setHeadless(headless))
+        playwright.firefox().launch(BrowserType.LaunchOptions().setHeadless(headless))
     }
 
 fun login(browser: Browser, username: String, password: String): Result<Page, Throwable> =
