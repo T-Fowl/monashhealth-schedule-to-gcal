@@ -3,10 +3,15 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     kotlin("jvm") version "1.7.20"
     kotlin("plugin.serialization") version "1.7.20"
+    application
 }
 
 group = "com.tfowl.monashhealth"
 version = "1.0-SNAPSHOT"
+
+application {
+    mainClass.set("com.tfowl.monashhealth.cli.Main")
+}
 
 repositories {
     mavenCentral()
