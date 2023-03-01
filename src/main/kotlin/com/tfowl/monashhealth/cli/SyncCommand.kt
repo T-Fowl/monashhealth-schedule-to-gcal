@@ -28,7 +28,7 @@ class SyncCommand : CliktCommand(name = "sync") {
 
     private val syncTo by option("--sync-to")
         .convert("DATE") { it.toLocalDateOrNull() ?: fail("Invalid format: $it") }
-        .default(LocalDate.now().plusMonths(2), "2 months from today")
+        .default(LocalDate.now().plusMonths(6), "6 months from today")
 
     private val username by option("--username").prompt("Username")
 
