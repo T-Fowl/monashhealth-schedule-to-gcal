@@ -1,3 +1,5 @@
+@file:JvmName("Main")
+
 package com.tfowl.monashhealth.cli
 
 import com.github.ajalt.clikt.core.NoOpCliktCommand
