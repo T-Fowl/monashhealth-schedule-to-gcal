@@ -22,7 +22,7 @@ data class EventsRequest(
 data class EventType(val name: String) {
     companion object {
         val ALL = listOf(
-            "approvedtimeoffrequest", // TODO: Haven't seen in the wild yet
+            "approvedtimeoffrequest",
             "holiday",
             "inprogresstimeoffrequest",
             "openshift",
@@ -130,6 +130,28 @@ sealed class Event {
     @Serializable
     @SerialName("inprogresstimeoffrequest")
     data class InProgressTimeOffRequest(
+        override val id: String,
+        override val title: String,
+        @Contextual @SerialName("startDateTime") val startInstant: Instant,
+        @Contextual @SerialName("endDateTime") val endInstant: Instant,
+//        @Contextual val startTime: LocalTime? = null,
+        val pid: Int,
+        val isComplete: Boolean,
+        val currentStateLabel: String,
+        val currentState: String, // TODO: Enum
+        val requestTitle: String,
+        val localizedRequestTitle: String,
+        val symbolicAmount: String,
+        val position: JsonElement? = null,
+    ) : Event() {
+        // TODO: Hard-coded zoneid (although this whole utility is only based around Aus/Mel)
+        override val startDateTime: LocalDateTime get() = LocalDateTime.ofInstant(startInstant, ZONE_MELBOURNE)
+        override val endDateTime: LocalDateTime get() = LocalDateTime.ofInstant(endInstant, ZONE_MELBOURNE)
+    }
+
+    @Serializable
+    @SerialName("approvedtimeoffrequest")
+    data class ApprovedTimeOffRequest(
         override val id: String,
         override val title: String,
         @Contextual @SerialName("startDateTime") val startInstant: Instant,

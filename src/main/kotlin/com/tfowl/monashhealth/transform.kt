@@ -42,6 +42,7 @@ fun Event.toGoogleEventOrNull(): GoogleEvent? {
         is Event.TransferShift            -> customiseTransferShift(commonEvent)
         is Event.PayCodeEdit              -> customisePayCodeEdit(commonEvent)
         is Event.InProgressTimeOffRequest -> customiseInProgressTimeOffRequest(commonEvent)
+        is Event.ApprovedTimeOffRequest   -> customiseApprovedTimeOffRequest(commonEvent)
         is Event.OpenShift                -> error("Should not reach here!")
         is Event.Holiday                  -> error("Should not reach here!")
     } ?: return null
@@ -70,6 +71,11 @@ fun Event.TransferShift.customiseTransferShift(event: GoogleEvent): GoogleEvent 
 }
 
 fun Event.InProgressTimeOffRequest.customiseInProgressTimeOffRequest(event: GoogleEvent): GoogleEvent {
+    return event
+        .setSummary("$title ($localizedRequestTitle) [${this.currentStateLabel}]")
+}
+
+fun Event.ApprovedTimeOffRequest.customiseApprovedTimeOffRequest(event: GoogleEvent): GoogleEvent {
     return event
         .setSummary("$title ($localizedRequestTitle) [${this.currentStateLabel}]")
 }
