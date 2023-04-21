@@ -81,15 +81,25 @@ fun Event.ApprovedTimeOffRequest.customiseApprovedTimeOffRequest(event: GoogleEv
 }
 
 private fun regularShiftSummary(shift: Event, job: String, comments: List<CommentNotes>): String = buildString {
-    // Starting before midday --> AM shift
-    if (shift.startDateTime.toLocalTime().isBefore(LocalTime.NOON))
-        append("AM \uD83C\uDF05")
-    // End day is after start day --> Night shift
-    else if (shift.endDateTime.toLocalDate().isAfter(shift.startDateTime.toLocalDate())) append("ND \uD83C\uDF03")
-    // Otherwise, start after noon and finish on the same day --> PM shift
-    else append("PM \uD83C\uDF07")
+    val isFlex = "FLEX" in job
+    val startTime = shift.startDateTime.toLocalTime()
+    val startDate = shift.startDateTime.toLocalDate()
+    val finishDate = shift.endDateTime.toLocalDate()
 
-    if (job != "RN") append(" $job")
+    if (startTime < LocalTime.NOON)
+        if (isFlex)
+            append("AM FLEX \uD83C\uDF05")
+        else
+            append("AM \uD83C\uDF05")
+    else if (startDate < finishDate)
+        if (isFlex)
+            append("PM FLEX \uD83C\uDF03")
+        else
+            append("ND \uD83C\uDF03")
+    else
+        append("PM \uD83C\uDF07")
+
+    if (job != "RN" && job != "RN-FLEX17" && job != "RN-FLEX9") append(" $job")
 
     // Example of a comment is for Supernumerary shifts
     if (comments.isNotEmpty())
