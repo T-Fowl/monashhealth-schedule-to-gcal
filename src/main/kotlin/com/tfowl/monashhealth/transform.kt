@@ -86,18 +86,24 @@ private fun regularShiftSummary(shift: Event, job: String, comments: List<Commen
     val startDate = shift.startDateTime.toLocalDate()
     val finishDate = shift.endDateTime.toLocalDate()
 
+    val hub = Regex("""\d+ (?<hub>H\d+)""").let { regex ->
+        regex.find(shift.title)?.let { mr ->
+            mr.groups["hub"]?.value
+        }
+    }?.let { " ($it)" } ?: ""
+
     if (startTime < LocalTime.NOON)
         if (isFlex)
-            append("AM FLEX \uD83C\uDF05")
+            append("AM FLEX$hub \uD83C\uDF05")
         else
-            append("AM \uD83C\uDF05")
+            append("AM$hub \uD83C\uDF05")
     else if (startDate < finishDate)
         if (isFlex)
-            append("PM FLEX \uD83C\uDF03")
+            append("PM FLEX$hub \uD83C\uDF03")
         else
-            append("ND \uD83C\uDF03")
+            append("ND$hub \uD83C\uDF03")
     else
-        append("PM \uD83C\uDF07")
+        append("PM$hub \uD83C\uDF07")
 
     if (job != "RN" && job != "RN-FLEX17" && job != "RN-FLEX9") append(" $job")
 
