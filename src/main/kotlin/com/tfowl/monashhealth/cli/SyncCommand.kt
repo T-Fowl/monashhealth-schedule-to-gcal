@@ -32,9 +32,9 @@ class SyncCommand : CliktCommand(name = "sync") {
         .convert("DATE") { it.toLocalDateOrNull() ?: fail("Invalid format: $it") }
         .default(LocalDate.now().plusMonths(6), "6 months from today")
 
-    private val username by option("--username", envvar = "MH_USERNAME").prompt("Username")
+    private val username by option("--username", envvar = "MH_USERNAME").required()
 
-    private val password by option("--password", envvar = "MH_PASSWORD").prompt("Password", hideInput = true)
+    private val password by option("--password", envvar = "MH_PASSWORD").required()
 
     override fun run() {
         println("Creating Google Calendar service")
