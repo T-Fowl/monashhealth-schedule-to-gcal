@@ -18,7 +18,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.microsoft.playwright:playwright:1.27.1")
+    implementation("com.microsoft.playwright:playwright:1.38.0")
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
 
