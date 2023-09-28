@@ -1,6 +1,7 @@
 package com.tfowl.monashhealth.cli
 
 import com.github.ajalt.clikt.core.CliktCommand
+import com.github.ajalt.clikt.parameters.groups.*
 import com.github.ajalt.clikt.parameters.options.*
 import com.github.ajalt.clikt.parameters.types.file
 import com.github.michaelbull.result.binding
@@ -14,14 +15,12 @@ import com.tfowl.gcal.calendarView
 import com.tfowl.gcal.sync
 import com.tfowl.monashhealth.*
 import java.io.File
+import java.io.Reader
 import java.time.LocalDate
 
 class SyncCommand : CliktCommand(name = "sync") {
-    private val googleCalendarId by option("--calendar", envvar = "MH_GCAL_ID").required()
-
-    private val googleClientSecrets by option("--secrets")
-        .file(mustBeReadable = true, canBeDir = false)
-        .default(File("client-secrets.json"))
+    private val calendarId by googleCalendarOption().required()
+    private val googleClientSecrets by googleClientSecretsOption().required()
 
     private val headless by option().flag("--no-headless", default = true)
 
@@ -41,14 +40,14 @@ class SyncCommand : CliktCommand(name = "sync") {
         println("Creating Google Calendar service")
         val service = GoogleCalendar.create(
             GoogleApiServiceConfig(
-                secrets = googleClientSecrets,
+                secretsProvider = { googleClientSecrets },
                 applicationName = "APPLICATION_NAME_PLACEHOLDER",
                 scopes = listOf(CalendarScopes.CALENDAR, CalendarScopes.CALENDAR_EVENTS),
                 dataStoreFactory = FileDataStoreFactory(File(".monashhealth-schedule"))
             )
         )
 
-        val calendar = service.calendarView(googleCalendarId)
+        val calendar = service.calendarView(calendarId)
 
         val events = binding {
             println("Creating web driver")
