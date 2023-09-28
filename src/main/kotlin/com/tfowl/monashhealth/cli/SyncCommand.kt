@@ -8,13 +8,16 @@ import com.github.michaelbull.result.getOrThrow
 import com.github.michaelbull.result.onFailure
 import com.google.api.client.util.store.FileDataStoreFactory
 import com.google.api.services.calendar.CalendarScopes
-import com.tfowl.gcal.*
+import com.tfowl.gcal.GoogleApiServiceConfig
+import com.tfowl.gcal.GoogleCalendar
+import com.tfowl.gcal.calendarView
+import com.tfowl.gcal.sync
 import com.tfowl.monashhealth.*
 import java.io.File
 import java.time.LocalDate
 
 class SyncCommand : CliktCommand(name = "sync") {
-    private val googleCalendarId by option("--calendar").required()
+    private val googleCalendarId by option("--calendar", envvar = "MH_GCAL_ID").required()
 
     private val googleClientSecrets by option("--secrets")
         .file(mustBeReadable = true, canBeDir = false)
@@ -30,9 +33,9 @@ class SyncCommand : CliktCommand(name = "sync") {
         .convert("DATE") { it.toLocalDateOrNull() ?: fail("Invalid format: $it") }
         .default(LocalDate.now().plusMonths(6), "6 months from today")
 
-    private val username by option("--username").prompt("Username")
+    private val username by option("--username", envvar = "MH_USERNAME").prompt("Username")
 
-    private val password by option("--password").prompt("Password", hideInput = true)
+    private val password by option("--password", envvar = "MH_PASSWORD").prompt("Password", hideInput = true)
 
     override fun run() {
         println("Creating Google Calendar service")
