@@ -2,7 +2,6 @@ package com.tfowl.monashhealth
 
 import com.github.michaelbull.result.Result
 import com.microsoft.playwright.Browser
-import com.microsoft.playwright.BrowserType
 import com.microsoft.playwright.Page
 import com.microsoft.playwright.Playwright
 import com.microsoft.playwright.options.AriaRole
@@ -11,12 +10,19 @@ import kotlinx.serialization.encodeToString
 
 fun createWebDriver(): Result<Playwright, Throwable> =
     com.github.michaelbull.result.runCatching {
-        Playwright.create()
+        Playwright.create(
+            Playwright.CreateOptions().setEnv(
+                mapOf(
+                    "PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD" to "true"
+                )
+            )
+        )
     }
 
-fun launchBrowser(playwright: Playwright, headless: Boolean = true): Result<Browser, Throwable> =
+fun connectToBrowser(playwright: Playwright, url: String): Result<Browser, Throwable> =
     com.github.michaelbull.result.runCatching {
-        playwright.firefox().launch(BrowserType.LaunchOptions().setHeadless(headless))
+        // TODO: Figure out version compatability matrix and switch to regular connect
+        playwright.chromium().connectOverCDP(url)
     }
 
 fun login(browser: Browser, username: String, password: String): Result<Page, Throwable> =

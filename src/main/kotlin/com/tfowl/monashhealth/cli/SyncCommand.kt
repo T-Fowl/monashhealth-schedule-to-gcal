@@ -3,7 +3,6 @@ package com.tfowl.monashhealth.cli
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.groups.*
 import com.github.ajalt.clikt.parameters.options.*
-import com.github.ajalt.clikt.parameters.types.file
 import com.github.michaelbull.result.binding
 import com.github.michaelbull.result.getOrThrow
 import com.github.michaelbull.result.onFailure
@@ -15,7 +14,6 @@ import com.tfowl.gcal.calendarView
 import com.tfowl.gcal.sync
 import com.tfowl.monashhealth.*
 import java.io.File
-import java.io.Reader
 import java.time.LocalDate
 
 class SyncCommand : CliktCommand(name = "sync") {
@@ -36,6 +34,8 @@ class SyncCommand : CliktCommand(name = "sync") {
 
     private val password by option("--password", envvar = "MH_PASSWORD").required()
 
+    private val playwrightDriverUrl by option("--playwright-driver-url", envvar = "PLAYWRIGHT_DRIVER_URL").required()
+
     override fun run() {
         println("Creating Google Calendar service")
         val service = GoogleCalendar.create(
@@ -52,8 +52,8 @@ class SyncCommand : CliktCommand(name = "sync") {
         val events = binding {
             println("Creating web driver")
             val response = createWebDriver().bind().use { pw ->
-                println("Launching browser")
-                val browser = launchBrowser(pw, headless = headless).bind()
+                println("Connecting to browser")
+                val browser = connectToBrowser(pw, playwrightDriverUrl).bind()
 
                 println("Logging into kronos")
                 val page = login(browser, username, password).bind()
