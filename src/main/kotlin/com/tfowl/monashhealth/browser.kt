@@ -21,8 +21,7 @@ fun createWebDriver(): Result<Playwright, Throwable> =
 
 fun connectToBrowser(playwright: Playwright, url: String): Result<Browser, Throwable> =
     com.github.michaelbull.result.runCatching {
-        // TODO: Figure out version compatability matrix and switch to regular connect
-        playwright.chromium().connectOverCDP(url)
+        playwright.chromium().connect(url)
     }
 
 fun login(browser: Browser, username: String, password: String): Result<Page, Throwable> =
