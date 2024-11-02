@@ -24,5 +24,6 @@ fun main(args: Array<String>) {
     MonashHealthCommand().subcommands(
         AuthCommand(),
         SyncCommand(),
+        ListCommand(),
     ).main(args)
 }
