@@ -1,0 +1,17 @@
+[versions]
+playwright = "1.46.0"
+kotlinx-serialization = "1.7.1"
+clikt = "3.4.0"
+kotlinresult = "1.1.14"
+
+[libraries]
+playwright = { module = "com.microsoft.playwright:playwright", version.ref = "playwright" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+clikt = {module="com.github.ajalt.clikt:clikt",version.ref="clikt"}
+kotlinresult={module="com.michael-bull.kotlin-result:kotlin-result",version.ref="kotlinresult"}
+
+[bundles]
+
+[plugins]
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version = "2.0.0" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version = "2.0.0" }

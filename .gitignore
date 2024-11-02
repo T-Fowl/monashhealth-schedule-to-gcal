@@ -6,3 +6,4 @@ out
 client-secrets.json
 *.private.env.json
 .monashhealth-schedule
+.env

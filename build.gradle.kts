@@ -1,9 +1,11 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "2.0.0"
-    kotlin("plugin.serialization") version "2.0.0"
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.kotlin.serialization)
     application
+    idea
 }
 
 group = "com.tfowl.monashhealth"
@@ -18,15 +20,11 @@ repositories {
 }
 
 dependencies {
-    implementation("com.microsoft.playwright:playwright:1.46.0")
-
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1")
-
-    implementation("com.github.ajalt.clikt:clikt:3.4.0")
-
+    implementation(libs.playwright)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.clikt)
+    implementation(libs.kotlinresult)
     implementation(project(":gcal-sync-kt"))
-
-    implementation("com.michael-bull.kotlin-result:kotlin-result:1.1.14")
 
     testImplementation(kotlin("test"))
 }
@@ -36,5 +34,7 @@ tasks.test {
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "21"
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_21)
+    }
 }
