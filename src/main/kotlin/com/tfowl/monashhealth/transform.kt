@@ -105,6 +105,8 @@ private fun regularShiftSummary(shift: Event, job: String, comments: List<Commen
     else
         append("PM$hub \uD83C\uDF07")
 
+    append(" ${shift.title}")
+
     if (job != "RN" && job != "RN-FLEX17" && job != "RN-FLEX9") append(" $job")
 
     // Example of a comment is for Supernumerary shifts
