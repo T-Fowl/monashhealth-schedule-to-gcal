@@ -38,3 +38,10 @@ tasks.withType<KotlinCompile> {
         jvmTarget.set(JvmTarget.JVM_21)
     }
 }
+
+idea {
+    module {
+        isDownloadJavadoc = true
+        isDownloadSources = true
+    }
+}
