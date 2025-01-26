@@ -1,7 +1,7 @@
 package com.tfowl.monashhealth.cli
 
 import com.github.ajalt.clikt.core.CliktCommand
-import com.github.ajalt.clikt.parameters.groups.*
+import com.github.ajalt.clikt.parameters.groups.required
 import com.github.ajalt.clikt.parameters.options.*
 import com.github.michaelbull.result.binding
 import com.github.michaelbull.result.getOrThrow
@@ -13,8 +13,11 @@ import com.tfowl.gcal.GoogleCalendar
 import com.tfowl.gcal.calendarView
 import com.tfowl.gcal.sync
 import com.tfowl.monashhealth.*
+import org.slf4j.LoggerFactory
 import java.io.File
 import java.time.LocalDate
+
+private val LOGGER = LoggerFactory.getLogger(SyncCommand::class.java)!!
 
 class SyncCommand : CliktCommand(name = "sync") {
     private val calendarId by googleCalendarOption().required()
@@ -37,7 +40,7 @@ class SyncCommand : CliktCommand(name = "sync") {
     private val playwrightDriverUrl by option("--playwright-driver-url", envvar = "PLAYWRIGHT_DRIVER_URL").required()
 
     override fun run() {
-        println("Creating Google Calendar service")
+        LOGGER.debug("Creating Google Calendar service")
         val service = GoogleCalendar.create(
             GoogleApiServiceConfig(
                 secretsProvider = { googleClientSecrets },
@@ -50,29 +53,35 @@ class SyncCommand : CliktCommand(name = "sync") {
         val calendar = service.calendarView(calendarId)
 
         val events = binding {
-            println("Creating web driver")
+            LOGGER.debug("Creating web driver")
             val response = createWebDriver().bind().use { pw ->
-                println("Connecting to browser")
+                LOGGER.debug("Connecting to browser")
                 val browser = connectToBrowser(pw, playwrightDriverUrl).bind()
 
-                println("Logging into kronos")
+                LOGGER.debug("Logging into kronos")
                 val page = login(browser, username, password).bind()
 
-                println("Fetching events")
+                LOGGER.debug("Fetching events")
                 requestEventsJson(
                     page, EventsRequest(syncFrom, syncTo, EventType.ALL)
                 ).bind()
             }
 
             JSON.tryDecodeFromString<Events>(response)
-                .onFailure { it.printStackTrace(); println(response) }
+                .onFailure { LOGGER.error(response, it) }
                 .bind()
         }.getOrThrow()
 
-        println("Transforming events")
+        LOGGER.debug("Transforming events")
         val roster = events.mapNotNull { it.toGoogleEventOrNull() }
 
-        println("Synchronising to Google Calendar")
+        LOGGER.atDebug()
+            .addKeyValue("syncFrom", syncFrom)
+            .addKeyValue("syncTo", syncTo)
+            .addKeyValue("zone", ZONE_MELBOURNE)
+            .addKeyValue("domain", DOMAIN)
+            .log("Synchronising to Google Calendar")
+
         sync(
             service, calendar,
             syncFrom..syncTo,
@@ -81,6 +90,6 @@ class SyncCommand : CliktCommand(name = "sync") {
             DOMAIN
         )
 
-        println("Done")
+        LOGGER.debug("Done")
     }
 }
