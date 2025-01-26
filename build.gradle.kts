@@ -26,6 +26,9 @@ dependencies {
     implementation(libs.kotlinresult)
     implementation(project(":gcal-sync-kt"))
 
+    runtimeOnly(libs.logback.core)
+    runtimeOnly(libs.logback.classic)
+
     testImplementation(kotlin("test"))
 }
 
