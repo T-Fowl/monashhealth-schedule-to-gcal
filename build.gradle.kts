@@ -26,6 +26,7 @@ dependencies {
     implementation(libs.kotlinresult)
     implementation(project(":gcal-sync-kt"))
 
+    implementation(libs.slf4j.api)
     runtimeOnly(libs.logback.core)
     runtimeOnly(libs.logback.classic)
 
