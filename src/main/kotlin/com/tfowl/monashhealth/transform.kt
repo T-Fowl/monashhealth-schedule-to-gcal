@@ -81,10 +81,14 @@ fun Event.ApprovedTimeOffRequest.customiseApprovedTimeOffRequest(event: GoogleEv
 }
 
 private fun regularShiftSummary(shift: Event, job: String, comments: List<CommentNotes>): String = buildString {
-    val isFlex = "FLEX" in job
     val startTime = shift.startDateTime.toLocalTime()
+    val endTime = shift.endDateTime.toLocalTime()
     val startDate = shift.startDateTime.toLocalDate()
     val finishDate = shift.endDateTime.toLocalDate()
+
+    val isFlex = "FLEX" in job ||
+            (startTime == LocalTime.of(9, 0) && endTime == LocalTime.of(17, 30)) ||
+            (startTime == LocalTime.of(17, 0) && endTime == LocalTime.of(1, 30))
 
     val hub = Regex("""\d+ (?<hub>H\d+)""").let { regex ->
         regex.find(shift.title)?.let { mr ->
