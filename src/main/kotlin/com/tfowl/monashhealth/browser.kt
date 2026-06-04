@@ -29,7 +29,8 @@ fun login(browser: Browser, username: String, password: String): Result<Page, Th
         val page = browser.newPage(Browser.NewPageOptions())
         page.navigate("https://monashhealth-SSO.prd.mykronos.com")
 
-        page.getByPlaceholder("Username").fill(username)
+        page.getByPlaceholder("employeeID@monashhealth.org").fill(username)
+        page.getByRole(AriaRole.BUTTON, Page.GetByRoleOptions().setName("Next")).click()
         page.getByPlaceholder("Password").fill(password)
         page.getByRole(AriaRole.BUTTON, Page.GetByRoleOptions().setName("Sign in")).click()
 
